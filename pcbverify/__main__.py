@@ -8,6 +8,7 @@ from .easyeda import FormatError, analyze_path
 from .kicad import native_check
 from .enet import read_enet, compare_geometry
 from .manufacturing import inspect_manufacturing_zip
+from .project import project_audit, project_markdown
 
 
 def to_markdown(r: dict) -> str:
@@ -58,12 +59,25 @@ def main(argv: list[str] | None = None) -> int:
     p_fab.add_argument("input", type=Path)
     p_fab.add_argument("--assembly", action="store_true", help="Require BOM and placement files by filename")
     p_fab.add_argument("--json", type=Path, dest="json_output")
+    p_project = subs.add_parser("project-audit", help="Bundle provided checks; output is NOT manufacturing approval")
+    p_project.add_argument("--easyeda", type=Path)
+    p_project.add_argument("--netlist", type=Path)
+    p_project.add_argument("--fabrication", type=Path)
+    p_project.add_argument("--assembly", action="store_true")
+    p_project.add_argument("--kicad-schematic", type=Path)
+    p_project.add_argument("--kicad-board", type=Path)
+    p_project.add_argument("--json", type=Path, dest="json_output")
+    p_project.add_argument("--markdown", type=Path, dest="markdown_output")
     p_native = subs.add_parser("kicad-check", help="Run real native KiCad ERC or DRC if kicad-cli is installed")
     p_native.add_argument("input", type=Path)
     p_native.add_argument("--json", type=Path, dest="json_output")
     args = parser.parse_args(argv)
     try:
-        if args.command == "analyze":
+        if args.command == "project-audit":
+            report = project_audit(easyeda=args.easyeda, netlist=args.netlist,
+                                   fabrication=args.fabrication, assembly=args.assembly,
+                                   kicad_schematic=args.kicad_schematic, kicad_board=args.kicad_board)
+        elif args.command == "analyze":
             report = analyze_path(args.input)
         elif args.command == "manufacturing-audit":
             report = inspect_manufacturing_zip(args.input, assembly=args.assembly)
@@ -82,6 +96,9 @@ def main(argv: list[str] | None = None) -> int:
         args.json_output.write_text(out, encoding="utf-8")
     else:
         print(out)
+    if args.command == "project-audit" and args.markdown_output:
+        args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
+        args.markdown_output.write_text(project_markdown(report), encoding="utf-8")
     if args.command == "analyze" and args.markdown_output:
         args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
         args.markdown_output.write_text(to_markdown(report), encoding="utf-8")

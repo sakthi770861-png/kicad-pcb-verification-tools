@@ -121,7 +121,7 @@ class SchematicConnectivityTests(unittest.TestCase):
         # Real scan construction is tested separately via analyze_epro2_bytes.
         import pcbverify.easyeda as ed
         original = ed.analyze_epro2_bytes
-        self.assertEqual(original_version(original), "0.4.0")
+        self.assertEqual(original_version(original), "0.5.0")
 
 
 def original_version(fn):

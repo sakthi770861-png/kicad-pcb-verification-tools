@@ -39,3 +39,12 @@
 - Includes tests for missing categories, legacy suffixes, invalid/path-traversal ZIPs, and reference mismatches.
 
 **Not included:** Gerber/Excellon geometry parsing, electrical clearance/thermal verification, full placement orientation checks, or factory approval.
+
+## v0.5.0 — 2026-11-03
+
+- Added `project-audit` CLI command combining provided EasyEDA geometry, exported `.enet`, fabrication ZIP and native KiCad CLI checks.
+- Captures unavailable and missing verification stages, and provides short Markdown summary plus complete structured JSON.
+- Maintains explicit evidence-only status; no implied manufacturing or electrical sign-off.
+- Added synthetic integration and mock-native test coverage.
+
+**Not included:** end-to-end physical validation, factory review or comprehensive CAM parsing.

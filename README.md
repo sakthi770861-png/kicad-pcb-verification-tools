@@ -4,7 +4,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 
 > ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Version 0.2 adds **geometric pin-to-wire evidence only**; this does **not** validate complete electrical nets or replace EasyEDA ERC. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.4.0)
+## Capabilities (v0.5.0)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -105,3 +105,14 @@ python3 -m pcbverify manufacturing-audit jlcpcb-export.zip --assembly --json ass
 ```
 
 The tool recognizes common KiCad and legacy Gerber naming conventions, identifies missing front/back copper, outline and drill categories, and optionally checks for BOM and placement files and compares their reference sets. **This is not CAM validation, manufacturability approval, or confirmation of BOM/CPL orientation accuracy.** See `docs/MANUFACTURING_LIMITATIONS.md`.
+
+## Combined project evidence (v0.5.0)
+
+Run independent checks and save their status in one JSON+Markdown bundle:
+
+```bash
+python3 -m pcbverify project-audit --easyeda myproject.epro2 --netlist myproject.enet \
+  --fabrication pcb-output.zip --assembly --json evidence.json --markdown evidence.md
+```
+
+KiCad users may pass `--kicad-schematic circuit.kicad_sch` and `--kicad-board board.kicad_pcb` if `kicad-cli` is installed. Missing or unavailable checks remain explicit. **An evidence bundle is not a manufacturing sign-off.**

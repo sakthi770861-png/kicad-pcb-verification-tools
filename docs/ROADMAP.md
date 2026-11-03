@@ -8,3 +8,6 @@
 - v0.7 (planned): automated regression tests for approved, permission-cleared hardware example projects.
 
 **All validation must remain clearly separated from certification or physical testing.**
+
+- v0.5 (shipped): combined project evidence report, with explicit missing and nonzero checks.
+- Future work: rigorous outline/mechanical clearance, parsed Gerber/Excellon geometry, BOM/CPL orientation and supplier-part verification, native KiCad issue classification, real representative permitted fixtures, field validation and release review before any v1.0 stable claim.
