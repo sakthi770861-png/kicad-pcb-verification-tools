@@ -4,7 +4,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 
 > ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Version 0.2 adds **geometric pin-to-wire evidence only**; this does **not** validate complete electrical nets or replace EasyEDA ERC. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.3.0)
+## Capabilities (v0.4.0)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -94,3 +94,14 @@ python3 -m pcbverify netlist my-schematic.enet --compare my-schematic.epro2 --js
 ```
 
 A missing connection or named-net mismatch is a review candidate, not proof of an electrical defect. Ensure both exports were saved from the **same design revision**. The tool cannot perform native EasyEDA ERC/DRC or confirm manufacturing safety. See `docs/ENET_EXPORT.md`.
+
+## Manufacturing export preflight (v0.4.0)
+
+Run a **filename/CSV manifest audit** on the exported ZIP before sending it to a board house:
+
+```bash
+python3 -m pcbverify manufacturing-audit gerber-drill-bundle.zip --json cam-manifest.json
+python3 -m pcbverify manufacturing-audit jlcpcb-export.zip --assembly --json assembly-manifest.json
+```
+
+The tool recognizes common KiCad and legacy Gerber naming conventions, identifies missing front/back copper, outline and drill categories, and optionally checks for BOM and placement files and compares their reference sets. **This is not CAM validation, manufacturability approval, or confirmation of BOM/CPL orientation accuracy.** See `docs/MANUFACTURING_LIMITATIONS.md`.

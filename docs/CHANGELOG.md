@@ -29,3 +29,13 @@
 - Added synthetic tests for exported-netlist parsing and comparisons.
 
 **Not included:** native EasyEDA ERC/DRC, electrical simulation, or proof that separately exported files represent the same revision. No real user `.enet` was supplied for end-to-end validation.
+
+## v0.4.0 — 2026-11-03
+
+- Added `manufacturing-audit` read-only ZIP manifest command.
+- Detects common Gerber layer categories, board-edge files, and Excellon drill files by filename only.
+- Optional `--assembly` presence checks for BOM and placement CSVs.
+- Best-effort CSV header parsing and BOM/CPL reference-designator comparison with advisory mismatches.
+- Includes tests for missing categories, legacy suffixes, invalid/path-traversal ZIPs, and reference mismatches.
+
+**Not included:** Gerber/Excellon geometry parsing, electrical clearance/thermal verification, full placement orientation checks, or factory approval.

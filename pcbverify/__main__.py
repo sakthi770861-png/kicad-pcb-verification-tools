@@ -7,6 +7,7 @@ import sys
 from .easyeda import FormatError, analyze_path
 from .kicad import native_check
 from .enet import read_enet, compare_geometry
+from .manufacturing import inspect_manufacturing_zip
 
 
 def to_markdown(r: dict) -> str:
@@ -53,6 +54,10 @@ def main(argv: list[str] | None = None) -> int:
     p_netlist.add_argument("input", type=Path)
     p_netlist.add_argument("--compare", type=Path, help="The .epro2 or ZIP from the SAME design revision")
     p_netlist.add_argument("--json", type=Path, dest="json_output")
+    p_fab = subs.add_parser("manufacturing-audit", help="Check fabrication ZIP inventory and optional assembly CSV headers")
+    p_fab.add_argument("input", type=Path)
+    p_fab.add_argument("--assembly", action="store_true", help="Require BOM and placement files by filename")
+    p_fab.add_argument("--json", type=Path, dest="json_output")
     p_native = subs.add_parser("kicad-check", help="Run real native KiCad ERC or DRC if kicad-cli is installed")
     p_native.add_argument("input", type=Path)
     p_native.add_argument("--json", type=Path, dest="json_output")
@@ -60,6 +65,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "analyze":
             report = analyze_path(args.input)
+        elif args.command == "manufacturing-audit":
+            report = inspect_manufacturing_zip(args.input, assembly=args.assembly)
         elif args.command == "netlist":
             report = read_enet(args.input)
             if args.compare:
