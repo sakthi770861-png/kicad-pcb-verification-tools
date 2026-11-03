@@ -117,11 +117,11 @@ class SchematicConnectivityTests(unittest.TestCase):
         self.assertEqual(c["skipped_wire_lines"], 1)
         self.assertEqual(c["unconnected_pin_candidates"], 2)
 
-    def test_v02_version_and_findings_integrate_with_report(self):
+    def test_report_version_matches_current_release(self):
         # Real scan construction is tested separately via analyze_epro2_bytes.
         import pcbverify.easyeda as ed
         original = ed.analyze_epro2_bytes
-        self.assertEqual(original_version(original), "0.2.0")
+        self.assertEqual(original_version(original), "0.3.0")
 
 
 def original_version(fn):

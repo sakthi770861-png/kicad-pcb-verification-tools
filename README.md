@@ -4,7 +4,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 
 > ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Version 0.2 adds **geometric pin-to-wire evidence only**; this does **not** validate complete electrical nets or replace EasyEDA ERC. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.2.0)
+## Capabilities (v0.3.0)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -83,3 +83,14 @@ MIT for original source code in this repository. Trademarks and third-party hard
 - [EasyEDA Pro schematic PIN](https://prodocs.easyeda.com/en/format/schematic/pin/) and [COMPONENT](https://prodocs.easyeda.com/en/format/schematic/component/) — pin endpoints and rotation/mirroring transformations.
 - [EasyEDA client format notes](https://github.com/easyeda/easyeda-client-cli/blob/main/easyeda-format.md) — `.epro2` ZIP containers and logical-ticket precedence.
 - [KiCad CLI documentation](https://docs.kicad.org/10.0/en/cli/cli.html) — native schematic ERC and PCB DRC commands.
+
+## Exported EasyEDA Pro netlist analysis (v0.3.0)
+
+EasyEDA Pro's **official** `.enet` export is a JSON snapshot. Use it to cross-check geometric evidence:
+
+```bash
+python3 -m pcbverify netlist my-schematic.enet --json netlist.json
+python3 -m pcbverify netlist my-schematic.enet --compare my-schematic.epro2 --json comparison.json
+```
+
+A missing connection or named-net mismatch is a review candidate, not proof of an electrical defect. Ensure both exports were saved from the **same design revision**. The tool cannot perform native EasyEDA ERC/DRC or confirm manufacturing safety. See `docs/ENET_EXPORT.md`.

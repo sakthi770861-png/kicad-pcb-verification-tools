@@ -254,7 +254,7 @@ def build_report(input_name: str, scans: list[dict[str, Any]]) -> dict[str, Any]
                              "message": f"{des}: found on PCB but not schematic"})
     findings.append({"severity": "info", "code": "NATIVE_VERIFICATION_REQUIRED",
                      "message": "Geometric pin-to-wire contact is not authoritative EasyEDA electrical net connectivity. No native EasyEDA ERC/DRC, trace current, thermal, USB-C or assembly validation was performed."})
-    return {"tool_version": "0.2.0", "input": input_name, "files": scans,
+    return {"tool_version": "0.3.0", "input": input_name, "files": scans,
             "summary": {"schematic_pages": len(schematic_pages), "pcb_boards": len(pcbs),
                         "schematic_references": len(sch_refs), "pcb_references": len(pcb_refs),
                         "schematic_only_references": sorted(sch_refs - pcb_refs) if pcbs else [],

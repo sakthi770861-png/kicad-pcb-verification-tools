@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 from .easyeda import FormatError, analyze_path
 from .kicad import native_check
+from .enet import read_enet, compare_geometry
 
 
 def to_markdown(r: dict) -> str:
@@ -48,6 +49,10 @@ def main(argv: list[str] | None = None) -> int:
     p_analyze.add_argument("input", type=Path)
     p_analyze.add_argument("--json", type=Path, dest="json_output")
     p_analyze.add_argument("--markdown", type=Path, dest="markdown_output")
+    p_netlist = subs.add_parser("netlist", help="Read a .enet export and optionally compare against EasyEDA geometry")
+    p_netlist.add_argument("input", type=Path)
+    p_netlist.add_argument("--compare", type=Path, help="The .epro2 or ZIP from the SAME design revision")
+    p_netlist.add_argument("--json", type=Path, dest="json_output")
     p_native = subs.add_parser("kicad-check", help="Run real native KiCad ERC or DRC if kicad-cli is installed")
     p_native.add_argument("input", type=Path)
     p_native.add_argument("--json", type=Path, dest="json_output")
@@ -55,6 +60,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "analyze":
             report = analyze_path(args.input)
+        elif args.command == "netlist":
+            report = read_enet(args.input)
+            if args.compare:
+                report["geometry_comparison"] = compare_geometry(report, analyze_path(args.compare))
         else:
             report = native_check(args.input)
     except (OSError, ValueError, FormatError) as err:
