@@ -9,6 +9,7 @@ from .kicad import native_check
 from .enet import read_enet, compare_geometry
 from .manufacturing import inspect_manufacturing_zip
 from .project import project_audit, project_markdown
+from .regression import run_regression
 
 
 def to_markdown(r: dict) -> str:
@@ -68,12 +69,17 @@ def main(argv: list[str] | None = None) -> int:
     p_project.add_argument("--kicad-board", type=Path)
     p_project.add_argument("--json", type=Path, dest="json_output")
     p_project.add_argument("--markdown", type=Path, dest="markdown_output")
+    p_reg = subs.add_parser("regression-check", help="Compare read-only evidence against a permission-safe JSON baseline")
+    p_reg.add_argument("manifest", type=Path)
+    p_reg.add_argument("--json", type=Path, dest="json_output")
     p_native = subs.add_parser("kicad-check", help="Run real native KiCad ERC or DRC if kicad-cli is installed")
     p_native.add_argument("input", type=Path)
     p_native.add_argument("--json", type=Path, dest="json_output")
     args = parser.parse_args(argv)
     try:
-        if args.command == "project-audit":
+        if args.command == "regression-check":
+            report = run_regression(args.manifest)
+        elif args.command == "project-audit":
             report = project_audit(easyeda=args.easyeda, netlist=args.netlist,
                                    fabrication=args.fabrication, assembly=args.assembly,
                                    kicad_schematic=args.kicad_schematic, kicad_board=args.kicad_board)
@@ -102,6 +108,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "analyze" and args.markdown_output:
         args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
         args.markdown_output.write_text(to_markdown(report), encoding="utf-8")
+    if args.command == "regression-check" and report["status"] != "PASS":
+        return 1
     if args.command == "kicad-check" and report["status"] != "CLI_COMPLETED":
         return 1
     return 0

@@ -1,10 +1,10 @@
 # KiCad & EasyEDA PCB Verification Tools
 
-A read-only, open-source Python CLI for basic CAD-file inspection and for running **real, native KiCad** electrical/design-rule checks when KiCad is installed. Intended for electronics students, hobbyists, and makers. Current release: **v0.2.0 (prototype)**.
+A read-only, open-source Python CLI for basic CAD-file inspection and for running **real, native KiCad** electrical/design-rule checks when KiCad is installed. Intended for electronics students, hobbyists, and makers. Current release: **v0.7.0 (prototype)**.
 
-> ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Version 0.2 adds **geometric pin-to-wire evidence only**; this does **not** validate complete electrical nets or replace EasyEDA ERC. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
+> ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Geometric evidence, exported netlists, and manufacturing file manifests do **not** replace native ERC, DRC, CAM review, or engineering validation. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.6.0)
+## Capabilities (v0.7.0)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -22,7 +22,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 ## Quick start on Ubuntu
 
 ```bash
-unzip kicad-pcb-verification-tools-v0.2.0.zip
+unzip kicad-pcb-verification-tools-v0.7.0.zip
 cd kicad-pcb-verification-tools
 python3 -m unittest discover -s tests -v
 python3 -m pcbverify analyze "/path/to/your/EasyEDA-project.zip" --json report.json --markdown report.md
@@ -67,7 +67,7 @@ See [docs/PROJECT_PORTFOLIO.md](docs/PROJECT_PORTFOLIO.md) for a summary of exam
 
 ## Test and support status
 
-The v0.2 implementation is tested using 20 synthetic standard-library unit tests and inspected offline against three privately provided EasyEDA Pro V3 archives. The public repository contains **no private design archives**. CI runs on Python 3.10, 3.12, and 3.13. The package build environment did not run an end-to-end native KiCad test. See [Connectivity limitations](docs/CONNECTIVITY_LIMITATIONS.md) before using any result.
+The release is tested with standard-library synthetic unit tests and inspected against three privately provided EasyEDA Pro V3 archives. The public repository contains **no private design archives**. CI runs on Python 3.10, 3.12, and 3.13. The package build environment did not run an end-to-end native KiCad test. See [Connectivity limitations](docs/CONNECTIVITY_LIMITATIONS.md) before using any result.
 
 ## Contributing
 
@@ -127,3 +127,14 @@ python3 -m pcbverify kicad-check circuit.kicad_sch --json schematic-erc-evidence
 ```
 
 Missing/malformed reports cannot be shown as clean. These commands have not yet been run against an installed native KiCad binary in this build environment and are NOT a fabrication sign-off.
+
+## Repeatable evidence regression (v0.7.0)
+
+Generate **synthetic, permission-safe** sample files and a baseline, then run an automated regression comparison:
+
+```bash
+python3 examples/make_synthetic_regression.py /tmp/pcbverify-demo
+python3 -m pcbverify regression-check /tmp/pcbverify-demo/regression-manifest.json --json /tmp/pcbverify-demo/report.json
+```
+
+The tool exits nonzero when an expected report value is absent or changes. A regression PASS is **not** an electrical safety or manufacturing certification. See [regression fixtures](docs/REGRESSION_FIXTURES.md).

@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.0 — 2026-11-04
+
+- Added reproducible `regression-check` CLI: compare baseline JSON Pointer values across EasyEDA Pro ZIP, exported `.enet` and manufacturing export-manifest reports.
+- Added generator for fully fictional, permission-safe sample archives and baseline; no private project sources are included.
+- Failing or missing input results cannot masquerade as a passing regression; CLI exits nonzero on differences.
+- Restricts baseline inputs to the manifest directory (including symlink resolution) and caps manifest size and number of cases/assertions.
+- Added synthetic behavioral, security and integration tests; release is still not manufacturing approval.
+
+**Limit:** Synthetic manufacturing Gerber placeholders are intentionally invalid CAM files; this feature checks report stability only. KiCad-native real runs and externally approved hardware fixture validation remain outstanding.
+
+
+
 ## v0.2.0 — 2026-11-03
 
 - Added EasyEDA Pro V3 schematic pin-to-wire geometric evidence using embedded symbol pins.
