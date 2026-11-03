@@ -84,3 +84,13 @@
 - Added review findings for byte-identical opposite copper files, mixed units and contradictory X2 layer names.
 - Seven new automated tests, bringing the suite to 64 tests.
 - **Not full CAM verification:** this tool does not parse drawing geometry, calculate board outlines, confirm plated/nonplated drill sizes, or validate panelization.
+
+## v1.0.0rc1 — 2026-11-04 (release candidate, NOT STABLE)
+
+- Introduced `release-gate` evidence audit. Missing native KiCad, EasyEDA exported netlist, or fabrication input is reported as a blocker; there is never an automatic manufacturing approval.
+- Added `--strict` flag to `manufacturing-audit` to fail CLI when expected file categories or CAM header findings remain.
+- Added a KiCad 10 native-validation shell helper for the user's own Ubuntu machine.
+- Added packaging smoke checks, explicit evidence matrix, stable release checklist and security notes.
+- Added unit tests for missing inputs, mocked complete evidence and strict failure status.
+
+**Release status:** candidate only. No actual KiCad 10 execution, real EasyEDA `.enet` exported from the user's designs, physical testing, or full CAM geometries were available in this runtime. Do not imply stable software or manufacturing acceptance.

@@ -20,3 +20,18 @@ jobs:
         run: |
           python examples/make_synthetic_regression.py /tmp/pcbverify-demo
           python -m pcbverify regression-check /tmp/pcbverify-demo/regression-manifest.json
+
+      - name: Compile and install CLI package
+        run: |
+          python -m compileall -q pcbverify
+          python -m pip install --no-deps .
+          pcbverify --help
+
+      - name: Release gate remains closed without native evidence
+        run: |
+          set +e
+          python -m pcbverify release-gate --json /tmp/pcbverify-release-gate.json
+          code=$?
+          set -e
+          test "$code" -eq 1
+          python -c 'import json; r=json.load(open("/tmp/pcbverify-release-gate.json")); assert r["status"] == "BLOCKED"'

@@ -20,3 +20,5 @@
 - v1.0 (candidate): documented release gate and evidence matrix; stable requires native integration and real-world sample validation.
 
 - v0.9 (shipped, limited): inspect Gerber/Excellon headers and cross-file metadata without claiming geometry, fabrication or assembly certification.
+
+- v1.0.0rc1 (released as candidate): explicit evidence gate, CLI/package smoke checks and private native KiCad 10 validation helper. **Stable v1.0 deferred until checklist passes.**

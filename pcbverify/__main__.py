@@ -10,6 +10,7 @@ from .enet import read_enet, compare_geometry
 from .manufacturing import inspect_manufacturing_zip
 from .project import project_audit, project_markdown
 from .regression import run_regression
+from .quality import release_gate
 
 
 def to_markdown(r: dict) -> str:
@@ -59,6 +60,7 @@ def main(argv: list[str] | None = None) -> int:
     p_fab = subs.add_parser("manufacturing-audit", help="Check fabrication ZIP inventory and optional assembly CSV headers")
     p_fab.add_argument("input", type=Path)
     p_fab.add_argument("--assembly", action="store_true", help="Require BOM and placement files by filename")
+    p_fab.add_argument("--strict", action="store_true", help="Exit nonzero if required categories or CAM review findings remain")
     p_fab.add_argument("--json", type=Path, dest="json_output")
     p_project = subs.add_parser("project-audit", help="Bundle provided checks; output is NOT manufacturing approval")
     p_project.add_argument("--easyeda", type=Path)
@@ -72,12 +74,24 @@ def main(argv: list[str] | None = None) -> int:
     p_reg = subs.add_parser("regression-check", help="Compare read-only evidence against a permission-safe JSON baseline")
     p_reg.add_argument("manifest", type=Path)
     p_reg.add_argument("--json", type=Path, dest="json_output")
+    p_gate = subs.add_parser("release-gate", help="Strict, conservative evidence gate; never approves manufacturing")
+    p_gate.add_argument("--easyeda", type=Path)
+    p_gate.add_argument("--netlist", type=Path)
+    p_gate.add_argument("--fabrication", type=Path)
+    p_gate.add_argument("--assembly", action="store_true")
+    p_gate.add_argument("--kicad-schematic", type=Path)
+    p_gate.add_argument("--kicad-board", type=Path)
+    p_gate.add_argument("--json", type=Path, dest="json_output")
     p_native = subs.add_parser("kicad-check", help="Run real native KiCad ERC or DRC if kicad-cli is installed")
     p_native.add_argument("input", type=Path)
     p_native.add_argument("--json", type=Path, dest="json_output")
     args = parser.parse_args(argv)
     try:
-        if args.command == "regression-check":
+        if args.command == "release-gate":
+            report = release_gate(easyeda=args.easyeda, netlist=args.netlist,
+                                  fabrication=args.fabrication, assembly=args.assembly,
+                                  kicad_schematic=args.kicad_schematic, kicad_board=args.kicad_board)
+        elif args.command == "regression-check":
             report = run_regression(args.manifest)
         elif args.command == "project-audit":
             report = project_audit(easyeda=args.easyeda, netlist=args.netlist,
@@ -108,6 +122,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "analyze" and args.markdown_output:
         args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
         args.markdown_output.write_text(to_markdown(report), encoding="utf-8")
+    if args.command == "release-gate":
+        # Even complete evidence requires external engineering review.
+        return 1
+    if args.command == "manufacturing-audit" and args.strict and (
+        report["missing_required_categories"] or report.get("cam_header_findings")
+    ):
+        return 1
     if args.command == "regression-check" and report["status"] != "PASS":
         return 1
     if args.command == "kicad-check" and report["status"] != "CLI_COMPLETED":

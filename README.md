@@ -1,10 +1,10 @@
 # KiCad & EasyEDA PCB Verification Tools
 
-A read-only, open-source Python CLI for basic CAD-file inspection and for running **real, native KiCad** electrical/design-rule checks when KiCad is installed. Intended for electronics students, hobbyists, and makers. Current release: **v0.9.0 (prototype)**.
+A read-only, open-source Python CLI for basic CAD-file inspection and for running **real, native KiCad** electrical/design-rule checks when KiCad is installed. Intended for electronics students, hobbyists, and makers. Current release: **v1.0.0rc1 (release candidate, NOT STABLE)**.
 
 > ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Geometric evidence, exported netlists, and manufacturing file manifests do **not** replace native ERC, DRC, CAM review, or engineering validation. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.9.0)
+## Capabilities (v1.0.0rc1)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -22,7 +22,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 ## Quick start on Ubuntu
 
 ```bash
-unzip kicad-pcb-verification-tools-v0.9.0.zip
+unzip kicad-pcb-verification-tools-v1.0.0rc1.zip
 cd kicad-pcb-verification-tools
 python3 -m unittest discover -s tests -v
 python3 -m pcbverify analyze "/path/to/your/EasyEDA-project.zip" --json report.json --markdown report.md
@@ -128,7 +128,7 @@ python3 -m pcbverify kicad-check circuit.kicad_sch --json schematic-erc-evidence
 
 Missing/malformed reports cannot be shown as clean. These commands have not yet been run against an installed native KiCad binary in this build environment and are NOT a fabrication sign-off.
 
-## Repeatable evidence regression (v0.9.0)
+## Repeatable evidence regression (v1.0.0rc1)
 
 Generate **synthetic, permission-safe** sample files and a baseline, then run an automated regression comparison:
 
@@ -146,3 +146,17 @@ Mock subprocess contract tests cover clean, nonzero, missing, malformed, and une
 ## v0.9 Manufacturing header review
 
 `pcbverify manufacturing-audit export.zip --json fab.json` records bounded Gerber/Excellon header hints and flags identical copper files, mixed units, or contradictory X2 layer tags. This is **not** a CAM geometry parser. The absence of reported issues cannot approve a board for manufacture.
+
+## v1.0.0rc1: release evidence gate
+
+Run `python -m pcbverify release-gate --json gate.json` to see missing evidence. Supply `--easyeda`, `--netlist`, `--fabrication`, `--kicad-schematic`, and `--kicad-board` paths to evaluate available checks. The command **intentionally returns a nonzero exit status** even when inputs are complete because native ERC/DRC and human CAM/electrical review cannot amount to automatic board approval.
+
+`python -m pcbverify manufacturing-audit exported.zip --strict --json fab.json` exits nonzero if required file categories or CAM-header review findings exist. A zero exit here means the limited preflight did not find those specific issues — **not that fabrication is ready**.
+
+For a real KiCad 10 run on your own Ubuntu computer:
+
+```bash
+bash scripts/run_native_kicad10_check.sh schematic.kicad_sch board.kicad_pcb native-reports
+```
+
+See [Validation matrix](docs/VALIDATION_MATRIX.md), [Release checklist](docs/RELEASE_CHECKLIST.md), and [Security notes](docs/SECURITY.md) for outstanding evidence. This candidate must not be presented as a fully validated stable v1.0 software release.
