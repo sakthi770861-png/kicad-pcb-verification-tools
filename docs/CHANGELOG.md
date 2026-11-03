@@ -11,6 +11,7 @@
 - Ignored historical orphan wire-line geometry when the parent wire was deleted.
 - Added 10 synthetic geometry/net tests, bringing standard-library unit tests to 20.
 - Updated documentation of limitations and compatibility.
+- CI compatibility fix: avoid Python 3.12-only f-string expression syntax in Markdown rendering; add Python 3.10 grammar regression check.
 
 **Not included:** native EasyEDA ERC/DRC, official exported `.enet` netlist verification, real-world current/thermal testing, or manufacturing sign-off.
 

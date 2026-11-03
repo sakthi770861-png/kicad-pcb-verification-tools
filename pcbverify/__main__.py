@@ -30,7 +30,8 @@ def to_markdown(r: dict) -> str:
             lines.append("| Component | Pin | State | Wire NET label |")
             lines.append("| --- | --- | --- | --- |")
             for pin in page["connectivity"]["pins"]:
-                lines.append(f"| {pin['ref']} | {pin['pin_number']} | {pin['connection_status']} | {pin['net_name'] or "(none)"} |")
+                net_label = pin["net_name"] or "(none)"
+                lines.append(f"| {pin['ref']} | {pin['pin_number']} | {pin['connection_status']} | {net_label} |")
             lines.append("")
     lines += ["## Findings", ""]
     for finding in r["findings"]:
