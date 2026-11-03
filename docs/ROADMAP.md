@@ -14,3 +14,7 @@
 - Future work: rigorous outline/mechanical clearance, parsed Gerber/Excellon geometry, BOM/CPL orientation and supplier-part verification, native KiCad issue classification, real representative permitted fixtures, field validation and release review before any v1.0 stable claim.
 
 - v0.6 (shipped): KiCad CLI JSON ERC/DRC issue summary, including PCB unconnected and parity categories.
+
+- v0.8 (shipped, limited): CLI subprocess contract tests and fail-closed handling. **Actual KiCad 10 run still required.**
+- v0.9 (planned): cautious Gerber/Excellon syntax/header and BOM/CPL input preflight.
+- v1.0 (candidate): documented release gate and evidence matrix; stable requires native integration and real-world sample validation.

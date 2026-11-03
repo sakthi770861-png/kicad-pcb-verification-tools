@@ -70,3 +70,10 @@
 - Added six new synthetic/mocked native integration tests.
 
 **Limit:** No actual KiCad executable is present in the build environment; a real KiCad 10 integration run remains outstanding.
+
+## v0.8.0 — 2026-11-04
+
+- Added subprocess-based **fake KiCad CLI contract tests** for schematic and board JSON reporting; clearly not native KiCad execution.
+- Fixed fail-closed behavior when a native report is malformed, oversized, absent, or contains findings despite a zero exit code.
+- Added explicit `validation_passed` evidence flag, limited to clean parseable native CLI output.
+- **Known blocker:** KiCad 10 executable and user-authorized representative netlist exports have not been supplied to this runtime. No claim of actual KiCad 10 end-to-end testing.

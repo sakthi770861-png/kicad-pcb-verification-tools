@@ -1,10 +1,10 @@
 # KiCad & EasyEDA PCB Verification Tools
 
-A read-only, open-source Python CLI for basic CAD-file inspection and for running **real, native KiCad** electrical/design-rule checks when KiCad is installed. Intended for electronics students, hobbyists, and makers. Current release: **v0.7.0 (prototype)**.
+A read-only, open-source Python CLI for basic CAD-file inspection and for running **real, native KiCad** electrical/design-rule checks when KiCad is installed. Intended for electronics students, hobbyists, and makers. Current release: **v0.8.0 (prototype)**.
 
 > ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Geometric evidence, exported netlists, and manufacturing file manifests do **not** replace native ERC, DRC, CAM review, or engineering validation. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.7.0)
+## Capabilities (v0.8.0)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -22,7 +22,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 ## Quick start on Ubuntu
 
 ```bash
-unzip kicad-pcb-verification-tools-v0.7.0.zip
+unzip kicad-pcb-verification-tools-v0.8.0.zip
 cd kicad-pcb-verification-tools
 python3 -m unittest discover -s tests -v
 python3 -m pcbverify analyze "/path/to/your/EasyEDA-project.zip" --json report.json --markdown report.md
@@ -128,7 +128,7 @@ python3 -m pcbverify kicad-check circuit.kicad_sch --json schematic-erc-evidence
 
 Missing/malformed reports cannot be shown as clean. These commands have not yet been run against an installed native KiCad binary in this build environment and are NOT a fabrication sign-off.
 
-## Repeatable evidence regression (v0.7.0)
+## Repeatable evidence regression (v0.8.0)
 
 Generate **synthetic, permission-safe** sample files and a baseline, then run an automated regression comparison:
 
@@ -138,3 +138,7 @@ python3 -m pcbverify regression-check /tmp/pcbverify-demo/regression-manifest.js
 ```
 
 The tool exits nonzero when an expected report value is absent or changes. A regression PASS is **not** an electrical safety or manufacturing certification. See [regression fixtures](docs/REGRESSION_FIXTURES.md).
+
+## v0.8 KiCad CLI contract validation
+
+Mock subprocess contract tests cover clean, nonzero, missing, malformed, and unexpected-issue native JSON responses. These tests do **not** execute the actual KiCad application. To perform a genuine native check, run `pcbverify kicad-check BOARD.kicad_pcb --json drc.json` with KiCad installed and review the resulting native output. An unreadable or missing report never passes.
