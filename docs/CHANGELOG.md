@@ -77,3 +77,10 @@
 - Fixed fail-closed behavior when a native report is malformed, oversized, absent, or contains findings despite a zero exit code.
 - Added explicit `validation_passed` evidence flag, limited to clean parseable native CLI output.
 - **Known blocker:** KiCad 10 executable and user-authorized representative netlist exports have not been supplied to this runtime. No claim of actual KiCad 10 end-to-end testing.
+
+## v0.9.0 — 2026-11-04
+
+- Added bounded Gerber X2 FileFunction, units and coordinate-format header inventory plus Excellon tool/units inspection.
+- Added review findings for byte-identical opposite copper files, mixed units and contradictory X2 layer names.
+- Seven new automated tests, bringing the suite to 64 tests.
+- **Not full CAM verification:** this tool does not parse drawing geometry, calculate board outlines, confirm plated/nonplated drill sizes, or validate panelization.

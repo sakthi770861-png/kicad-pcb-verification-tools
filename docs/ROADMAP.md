@@ -18,3 +18,5 @@
 - v0.8 (shipped, limited): CLI subprocess contract tests and fail-closed handling. **Actual KiCad 10 run still required.**
 - v0.9 (planned): cautious Gerber/Excellon syntax/header and BOM/CPL input preflight.
 - v1.0 (candidate): documented release gate and evidence matrix; stable requires native integration and real-world sample validation.
+
+- v0.9 (shipped, limited): inspect Gerber/Excellon headers and cross-file metadata without claiming geometry, fabrication or assembly certification.

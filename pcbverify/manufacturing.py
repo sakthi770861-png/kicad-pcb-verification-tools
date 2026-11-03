@@ -11,6 +11,7 @@ from pathlib import Path, PurePosixPath
 import re
 from typing import Any
 from zipfile import BadZipFile, ZipFile
+from .cam import scan_cam_header, cam_cross_checks, MAX_CAM_INSPECTION_BYTES
 
 MAX_ENTRIES = 1000
 MAX_ZIP_BYTES = 100 * 1024 * 1024
@@ -84,6 +85,7 @@ def inspect_manufacturing_zip(path: str | Path, assembly: bool = False) -> dict[
         raise ManufacturingArchiveError('ZIP file exceeds archive limit')
     found: dict[str, list[str]] = {}
     csv_reports: dict[str, Any] = {}
+    cam_metadata: dict[str, list[dict[str, Any]]] = {}
     try:
         with ZipFile(path) as z:
             entries = z.infolist()
@@ -100,6 +102,23 @@ def inspect_manufacturing_zip(path: str | Path, assembly: bool = False) -> dict[
                 if not kind:
                     continue
                 found.setdefault(kind, []).append(filename)
+                if kind in {'front_copper','back_copper','front_mask','back_mask',
+                            'front_silkscreen','back_silkscreen','outline','drill'}:
+                    # Bounded decompression; reject oversized or zip-bomb-style entries.
+                    if info.file_size > MAX_CAM_INSPECTION_BYTES * 20 or (
+                        info.compress_size and info.file_size / info.compress_size > 1000
+                    ):
+                        cam_metadata.setdefault(kind, []).append({'category':kind, 'status':'TOO_LARGE_OR_HIGH_RATIO',
+                                                                   'file':filename, 'units':None})
+                    else:
+                        with z.open(info) as f:
+                            contents = f.read(MAX_CAM_INSPECTION_BYTES * 20 + 1)
+                        if len(contents) > MAX_CAM_INSPECTION_BYTES * 20:
+                            cam_metadata.setdefault(kind, []).append({'category':kind, 'status':'TOO_LARGE',
+                                                                       'file':filename, 'units':None})
+                        else:
+                            cam_metadata.setdefault(kind, []).append({'file':filename,
+                                **scan_cam_header(contents,kind)})
                 if kind in {'bom','placement'}:
                     if info.file_size > MAX_CSV_BYTES:
                         csv_reports[filename] = {'status': 'TOO_LARGE'}
@@ -130,11 +149,13 @@ def inspect_manufacturing_zip(path: str | Path, assembly: bool = False) -> dict[
         ref_mismatch = {'bom_only': sorted(b-c), 'placement_only': sorted(c-b)}
         if b != c:
             info.append('BOM/placement references differ; DNP, THT or manual assembly may explain differences.')
+    header_findings = cam_cross_checks(cam_metadata)
     return {'input':path.name, 'status':'MANIFEST_REVIEW_ONLY', 'assembly_requested':bool(assembly),
             'detected_file_categories':{k:sorted(v) for k,v in sorted(found.items())},
             'missing_required_categories':missing,'csv_summary':csv_reports,
+            'cam_header_metadata': cam_metadata, 'cam_header_findings': header_findings,
             'bom_placement_reference_differences':ref_mismatch,
             'notes':info + [
-                'Filename detection is heuristic. No Gerber geometry, Excellon coordinates, solderability, component purchasing, footprint orientation, electrical clearance, or panelization were validated.',
+                'Filename detection and CAM header reading are heuristic. No Gerber geometry, Excellon coordinates, solderability, component purchasing, footprint orientation, electrical clearance, or panelization were validated.',
                 'Treat all results as a preflight checklist, never a manufacturing release approval.'
             ]}
