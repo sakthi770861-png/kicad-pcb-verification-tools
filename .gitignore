@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+*.zip
+*.epro2
+*.epru
+*.kicad_sch
+*.kicad_pcb
+*.kicad_pro
+*.gbr
+*.drl
+reports/private/

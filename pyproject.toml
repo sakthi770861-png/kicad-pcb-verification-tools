@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kicad-easyeda-pcb-verification-tools"
+version = "0.1.0"
+description = "Conservative EasyEDA Pro design inventory and KiCad native CLI ERC/DRC wrappers"
+requires-python = ">=3.10"
+license = "MIT"
+readme = "README.md"
+authors = [{name = "Open-source contributors"}]
+classifiers = ["Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)"]
+
+[project.scripts]
+pcbverify = "pcbverify.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pcbverify*"]
