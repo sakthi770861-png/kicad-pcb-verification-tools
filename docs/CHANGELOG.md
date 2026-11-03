@@ -48,3 +48,13 @@
 - Added synthetic integration and mock-native test coverage.
 
 **Not included:** end-to-end physical validation, factory review or comprehensive CAM parsing.
+
+## v0.6.0 — 2026-11-03
+
+- Updated official KiCad CLI integration to request machine-readable JSON ERC/DRC reports.
+- Summarizes every ERC sheet's violation array.
+- Summarizes PCB DRC violation, unconnected-item and schematic-parity arrays, including severity counts.
+- Missing/malformed native report is not accepted as successful verification, even on a process exit code of 0.
+- Added six new synthetic/mocked native integration tests.
+
+**Limit:** No actual KiCad executable is present in the build environment; a real KiCad 10 integration run remains outstanding.

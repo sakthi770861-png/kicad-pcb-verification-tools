@@ -43,7 +43,7 @@ def project_audit(*, easyeda: str | Path | None = None,
     missing = [name for name in ('easyeda_geometry','exported_netlist','fabrication_manifest',
                                   'kicad_schematic_erc','kicad_pcb_drc')
                if name not in {c['check'] for c in checks}]
-    statuses = [c for c in checks if c['status'] in {'CLI_NONZERO', 'NOT_RUN'}]
+    statuses = [c for c in checks if c['check'].startswith('kicad_') and c['status'] != 'CLI_COMPLETED']
     return {
         'status': 'EVIDENCE_BUNDLE_NOT_MANUFACTURING_APPROVAL',
         'checks': checks, 'not_provided_checks': missing,

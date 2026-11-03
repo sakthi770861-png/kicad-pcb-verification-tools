@@ -4,7 +4,7 @@ A read-only, open-source Python CLI for basic CAD-file inspection and for runnin
 
 > ⚠️ **NOT a manufacturing approval tool.** Structural checks are not ERC/DRC. Version 0.2 adds **geometric pin-to-wire evidence only**; this does **not** validate complete electrical nets or replace EasyEDA ERC. No circuit simulation, datasheet verification, current-density calculation, thermal simulation, USB-C compliance, BOM purchasing check, or JLCPCB assembly verification is performed.
 
-## Capabilities (v0.5.0)
+## Capabilities (v0.6.0)
 
 - Parses EasyEDA Pro V3 `.epro2` ZIP archives, including ZIP folders containing separate schematic and PCB files.
 - Distinguishes embedded symbol/footprint library documents from actual placed PCB/schematic components.
@@ -116,3 +116,14 @@ python3 -m pcbverify project-audit --easyeda myproject.epro2 --netlist myproject
 ```
 
 KiCad users may pass `--kicad-schematic circuit.kicad_sch` and `--kicad-board board.kicad_pcb` if `kicad-cli` is installed. Missing or unavailable checks remain explicit. **An evidence bundle is not a manufacturing sign-off.**
+
+## KiCad native JSON summary (v0.6.0)
+
+When the official `kicad-cli` is installed, native ERC and DRC use `--format json`. Their findings include **ERC sheet violations** and **DRC rule violations, unconnected items, and schematic parity**.
+
+```bash
+python3 -m pcbverify kicad-check board.kicad_pcb --json board-drc-evidence.json
+python3 -m pcbverify kicad-check circuit.kicad_sch --json schematic-erc-evidence.json
+```
+
+Missing/malformed reports cannot be shown as clean. These commands have not yet been run against an installed native KiCad binary in this build environment and are NOT a fabrication sign-off.
