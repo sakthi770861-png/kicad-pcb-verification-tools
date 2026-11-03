@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 from zipfile import BadZipFile, ZipFile
+from .connectivity import inspect_schematic
 
 MAX_EPRO2_BYTES = 30 * 1024 * 1024
 MAX_EPRU_BYTES = 20 * 1024 * 1024
@@ -126,6 +127,7 @@ def analyze_epro2_bytes(content: bytes, filename: str = "design.epro2") -> dict[
                for doc in docs if doc["doc_type"] == "DEVICE"}
     footprints = {str(doc["uuid"]): doc["metadata"].get("title", "")
                   for doc in docs if doc["doc_type"] == "FOOTPRINT"}
+    symbols = {str(doc["uuid"]): doc for doc in docs if doc["doc_type"] == "SYMBOL"}
     schematics = []
     boards = []
     for doc in docs:
@@ -163,6 +165,7 @@ def analyze_epro2_bytes(content: bytes, filename: str = "design.epro2") -> dict[
                   "record_counts": dict(sorted(record_types.items()))}
         if doc["doc_type"] == "SCH_PAGE":
             result["wire_record_count"] = record_types.get("WIRE", 0)
+            result["connectivity"] = inspect_schematic(doc, symbols)
             schematics.append(result)
         else:
             layers = [d for h, d in recs if h.get("type") == "LAYER"]
@@ -237,6 +240,8 @@ def build_report(input_name: str, scans: list[dict[str, Any]]) -> dict[str, Any]
                 findings.append({"severity": "warning", "code": "DUPLICATE_DESIGNATOR",
                                  "message": f"{scan['file']}: repeated PCB designator {des}"})
         for page in scan["schematics"]:
+            for finding in page["connectivity"]["findings"]:
+                findings.append({**finding, "message": f"{scan['file']} / {page['name']}: {finding['message']}"})
             for des in page["duplicate_designators"]:
                 findings.append({"severity": "warning", "code": "DUPLICATE_DESIGNATOR",
                                  "message": f"{scan['file']}: repeated schematic designator {des}"})
@@ -248,8 +253,8 @@ def build_report(input_name: str, scans: list[dict[str, Any]]) -> dict[str, Any]
             findings.append({"severity": "warning", "code": "PCB_ONLY_REFERENCE",
                              "message": f"{des}: found on PCB but not schematic"})
     findings.append({"severity": "info", "code": "NATIVE_VERIFICATION_REQUIRED",
-                     "message": "No native EasyEDA ERC/DRC, net connectivity, trace current, thermal, USB-C or assembly validation was performed."})
-    return {"tool_version": "0.1.0", "input": input_name, "files": scans,
+                     "message": "Geometric pin-to-wire contact is not authoritative EasyEDA electrical net connectivity. No native EasyEDA ERC/DRC, trace current, thermal, USB-C or assembly validation was performed."})
+    return {"tool_version": "0.2.0", "input": input_name, "files": scans,
             "summary": {"schematic_pages": len(schematic_pages), "pcb_boards": len(pcbs),
                         "schematic_references": len(sch_refs), "pcb_references": len(pcb_refs),
                         "schematic_only_references": sorted(sch_refs - pcb_refs) if pcbs else [],

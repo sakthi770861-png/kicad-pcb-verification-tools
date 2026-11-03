@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kicad-easyeda-pcb-verification-tools"
-version = "0.1.0"
-description = "Conservative EasyEDA Pro design inventory and KiCad native CLI ERC/DRC wrappers"
+version = "0.2.0"
+description = "Conservative EasyEDA Pro geometric pin-to-net analysis and KiCad native CLI ERC/DRC wrappers"
 requires-python = ">=3.10"
 license = "MIT"
 readme = "README.md"
