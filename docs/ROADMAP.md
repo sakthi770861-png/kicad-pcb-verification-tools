@@ -1,24 +1,34 @@
-# Roadmap (proposals, not shipped features)
+# Roadmap and release evidence
 
-- v0.2 (shipped): **geometric** EasyEDA Pro pin-to-wire evidence, net-label extraction, cautious crossing handling, and synthetic tests. This is not authoritative schematic net connectivity or ERC.
-- v0.3 (shipped): import and compare the official EasyEDA-exported `.enet` electrical netlist so actual pin/net assignments can be verified without relying on geometry alone.
-- v0.4 (shipped, limited): fabrication ZIP category audit and BOM/placement CSV reference comparison. Actual board-edge reconstruction and mechanical clearance checks are NOT shipped.
-- v0.6 (shipped): structured KiCad CLI JSON severity/issue summaries, excluding native command integration testing without KiCad executable.
-- v0.6 (planned): detailed drill/CAM geometry checks using appropriate format parsers, user-provided fab rules, and assembly centroid semantics.
-- v0.7 (shipped): automated evidence-baseline regression command with generated, permission-safe **synthetic** EasyEDA/netlist/fabrication examples; real approved public hardware reference designs remain future work.
-- v0.8 (planned): test and review actual exported `.enet` and KiCad 10 native ERC/DRC on permission-cleared representative designs; no stable release without real toolchain evidence.
+This roadmap distinguishes **shipped functionality**, **limited functionality**, and **unverified release requirements**. A successful command or a synthetic fixture is not a manufacturing certification.
 
-**All validation must remain clearly separated from certification or physical testing.**
+## Shipped
 
-- v0.5 (shipped): combined project evidence report, with explicit missing and nonzero checks.
-- Future work: rigorous outline/mechanical clearance, parsed Gerber/Excellon geometry, BOM/CPL orientation and supplier-part verification, native KiCad issue classification, real representative permitted fixtures, field validation and release review before any v1.0 stable claim.
+- v0.2: Informational EasyEDA Pro pin-to-wire geometry, label extraction, and cautious crossing handling.
+- v0.3: Comparison with exported EasyEDA `.enet` electrical netlists.
+- v0.4 (limited): Fabrication ZIP inventory and BOM/placement reference comparison; no mechanical clearance certification.
+- v0.5: Combined project evidence report that records missing and nonzero checks.
+- v0.6: Structured KiCad CLI ERC/DRC JSON issue summaries.
+- v0.7: Reproducible synthetic evidence-baseline regression fixtures and tests.
+- v0.8 (limited): CLI subprocess contract tests and fail-closed handling; not proof of a native KiCad 10 run.
+- v0.9 (limited): Gerber/Excellon header and metadata preflight, not geometry verification.
+- v1.0.0rc1: Release candidate with documentation, evidence gate, and installation smoke checks. **Not a stable release.**
 
-- v0.6 (shipped): KiCad CLI JSON ERC/DRC issue summary, including PCB unconnected and parity categories.
+## Before a stable release
 
-- v0.8 (shipped, limited): CLI subprocess contract tests and fail-closed handling. **Actual KiCad 10 run still required.**
-- v0.9 (planned): cautious Gerber/Excellon syntax/header and BOM/CPL input preflight.
-- v1.0 (candidate): documented release gate and evidence matrix; stable requires native integration and real-world sample validation.
+1. Run and record the full unit-test matrix, including Python 3.10, 3.12, and 3.13.
+2. Run the actual supported KiCad CLI against permission-cleared, representative KiCad schematic and PCB fixtures; capture the exact KiCad version, commands, exit codes, and ERC/DRC reports.
+3. Test representative EasyEDA `.epro2` and `.enet` files with permission to publish or clearly document private test evidence without disclosing confidential designs.
+4. Review and resolve CI failures, packaging/install smoke tests, and any discrepancy between the documented and actual CLI behavior.
+5. Record release evidence and known limitations before tagging a stable version.
 
-- v0.9 (shipped, limited): inspect Gerber/Excellon headers and cross-file metadata without claiming geometry, fabrication or assembly certification.
+## Future work
 
-- v1.0.0rc1 (released as candidate): explicit evidence gate, CLI/package smoke checks and private native KiCad 10 validation helper. **Stable v1.0 deferred until checklist passes.**
+- Rigorous board outline and mechanical clearance checks.
+- Parsed Gerber/Excellon geometry and user-defined fabrication constraints.
+- Assembly centroid, orientation, BOM/CPL, and supplier-part verification.
+- Broader native KiCad issue classification and representative fixture coverage.
+
+## Safety boundary
+
+Structural inspection, netlist comparison, CAM header inspection, and even a completed native ERC/DRC **do not** establish electrical safety, thermal performance, manufacturing readiness, USB-C compliance, or physical validation. Keep private client designs and other sensitive data out of public test fixtures.
